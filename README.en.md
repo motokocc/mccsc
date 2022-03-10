@@ -8,33 +8,9 @@ service主要处理业务，只关注业务逻辑的实现，不需要考虑存�
 controller 管理业务，存储业务相关数据，
 
 #### Software Architecture
-Software architecture description
+中心：存储核心数据：用户信息 、管理器信息，// 部署频率低、尽量做到一次部署永久使用，如果只存储用户数据
+控制器：存储用户业务数据，一个业务服务可以对应多个控制器，
+业务服务有两部分组成： 管理器和服务
+管理器：负责创建业务canister和维护业务canister信息，控制器和具体的业务服务之间的关联关系
+服务：具体的业务逻辑服务，可以有多个canister实例
 
-#### Installation
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Instructions
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Contribution
-
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
-
-
-#### Gitee Feature
-
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)

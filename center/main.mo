@@ -31,20 +31,22 @@ actor {
     };
 
     let manager_map: HashMap.HashMap<Principal, ManagerInfo> = HashMap.HashMap<Principal, ManagerInfo>(10, func (x, y) { x == y }, Principal.hash);
+    
+    // 用户的基础数据，比如名称/头像之类的
     let user_map: HashMap.HashMap<Principal, UserInfo> = HashMap.HashMap<Principal, UserInfo>(10, func (x, y) { x == y }, Principal.hash);
     
-    // 游戏申请上线接口
+    // 注册业务接口
     public shared(msg) func register_manager(_principal: PrincipalText, _name: Text): async Principal{
         let mng_principal = Principal.fromText(_principal);
         manager_map.put(mng_principal, {principal = mng_principal; name = _name;});
         mng_principal
     };
 
-    // 控制器创建游戏房间, 一个控制器只能创建一个游戏
+    // 控制器创建业务服务, 一个控制器只能创建一个业务服务
     public shared(msg) func create_server(_controller: PrincipalText, _manager: PrincipalText, _name :Text): async ?Principal{
         let mng_principal = Principal.fromText(_manager);
         
-        // 增加对对游戏创建的权限判断，增加是否是注册游戏的判断
+        // 判断是否有该业务对应的管理器
         switch(manager_map.get(mng_principal)){
             case null { null };
             case (?m) { 
@@ -64,8 +66,8 @@ actor {
     };
 
 
+    // 用户查询业务列表，然后根据需要去连接对应的业务服务
     public func sever_list(_principal: PrincipalText): async ?[ServerInfo]{
-        // 增加对对游戏创建的权限判断，增加是否是注册游戏的判断
         let mng_principal = Principal.fromText(_principal);
         switch(manager_map.get(mng_principal)){
             case null { null };

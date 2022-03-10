@@ -5,11 +5,11 @@
         "type": "motoko"
       },
       "ddz": {
-        "main": "services/ddz/manager.mo",
+        "main": "services/test/manager.mo",
         "type": "motoko"
       },
       "score": {
-        "main": "controller/score/main.mo",
+        "main": "controller/data/main.mo",
         "type": "motoko"
       }
     },
