@@ -15,7 +15,13 @@ actor {
         principal: Principal;
         name: Text;
     };
-
+    
+    public type SeviceInfo = {
+		server: Principal;
+		controller: Principal;
+		name: Text;
+	};
+    
     // 管理器接口
     public type ManagerActor = actor {
         create_server: (_principal: Principal, _name: Text) -> async Principal;

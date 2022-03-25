@@ -18,7 +18,7 @@ actor {
 
     // 注册到中心服务
     public shared(msg) func register_center(_controller: Principal, _name: Text): async Principal{ 
-        
+        _controller
     };
 
     // 创建业务服务器，创建的时候需要做鉴权处理，
@@ -30,7 +30,7 @@ actor {
     };
 
     // 查询业务服务器列表,公开接口 都可以查询
-    public query(msg) func server_list(): async [ServerInfo]{
+    public query(msg) func server_list(): async [SeviceInfo]{
         Iter.toArray(server_map.vals())
     };
 

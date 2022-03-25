@@ -9,10 +9,12 @@ import Principal "mo:base/Principal";
 
 actor {
 
-	public type ServerResult = {
-		user: Principal;
-		score: Int;
-	};
+    public type UserData = Int;
+
+    public type ServiceData = {
+        user: Principal;
+        data: UserData;
+		};
 	
     private stable var s_center : ?Principal = null;
     private stable var s_server : ?Principal = null;
@@ -31,7 +33,7 @@ actor {
 		// 用户也需要提前注册到这里
     public shared(msg) func register(): async ?Principal{
 		// 需要查询中心服务，用户是否存在
-		switch(sCenter){
+		switch(s_center){
 			case null { null };
 			case (?principal) { 
         let center : CenterActor = actor(Principal.toText(principal));
@@ -50,7 +52,7 @@ actor {
 
 	// 用户进入业务时，需要鉴权判断，如果允许返回ture，让用户继续业务
 	public shared(msg) func allow(user: Principal) : async Bool{
-		switch(sServer){
+		switch(s_server){
 			case null { false };
 			case (?principal) { 
 				if(msg.caller == principal){
@@ -72,8 +74,8 @@ actor {
 	};
 
 	// 业务结束后， 处理业务数据
-	public shared(msg) func update(result: [ServerResult]) : async (){
-		switch(sServer){
+	public shared(msg) func update(result: [ServiceData]) : async (){
+		switch(s_server){
 			case null {  };
 			case (?principal) { 
 			};
