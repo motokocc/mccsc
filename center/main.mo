@@ -10,50 +10,44 @@ actor {
     public type PrincipalText = Text;
     public type UserInfo = Text;
 
+    // 业务管理容器
     public type ManagerInfo = {
         principal: Principal;
         name: Text;
     };
 
-    public type ServerInfo = {
-		server: Principal;
-		controller: Principal;
-		name: Text;
-	};
-
+    // 管理器接口
     public type ManagerActor = actor {
         create_server: (_principal: Principal, _name: Text) -> async Principal;
-        server_list: () -> async ?[ServerInfo];
+        server_list: () -> async [SeviceInfo];
     };
 
+    // 控制器接口
     public type ControllerActor = actor {
         bind: (_server: Principal) -> async ();
     };
 
+    // 数据存储，为了方便目前才用了HashMap存储，使用的时候，用支持stable的类型来替换，还要考虑升级的操作
     let manager_map: HashMap.HashMap<Principal, ManagerInfo> = HashMap.HashMap<Principal, ManagerInfo>(10, func (x, y) { x == y }, Principal.hash);
-    
-    // 用户的基础数据，比如名称/头像之类的
     let user_map: HashMap.HashMap<Principal, UserInfo> = HashMap.HashMap<Principal, UserInfo>(10, func (x, y) { x == y }, Principal.hash);
     
-    // 注册业务接口
-    public shared(msg) func register_manager(_principal: PrincipalText, _name: Text): async Principal{
-        let mng_principal = Principal.fromText(_principal);
-        manager_map.put(mng_principal, {principal = mng_principal; name = _name;});
-        mng_principal
+    // 服务管理器注册接口， 所有的服务都由服务管理器来创建
+    public shared(msg) func register_manager(_manager: Principal, _name: Text): async Principal{
+        manager_map.put(_manager, {principal = _manager; name = _name;});
+        _manager
     };
 
-    // 控制器创建业务服务, 一个控制器只能创建一个业务服务
-    public shared(msg) func create_server(_controller: PrincipalText, _manager: PrincipalText, _name :Text): async ?Principal{
-        let mng_principal = Principal.fromText(_manager);
-        
-        // 判断是否有该业务对应的管理器
-        switch(manager_map.get(mng_principal)){
+
+    // 控制器创建业务服务接口, 一个控制器只能创建一个业务，创建后服务和控制器绑定
+    public shared(msg) func create_server(_controller: Principal, _manager: Principal, _name :Text): async ?Principal{
+        // 增加访问权限判断
+        switch(manager_map.get(_manager)){
             case null { null };
             case (?m) { 
-                let manager : ManagerActor = actor(_manager);
-                let server = await manager.create_server(Principal.fromText(_controller), _name);
+                let manager : ManagerActor = actor(Principal.toText(_manager));
+                let server = await manager.create_server(_controller, _name);
                 
-                let controller : ControllerActor = actor(_controller);
+                let controller : ControllerActor = actor(Principal.toText(_controller));
                 await controller.bind(server);
                 ?server
             };
@@ -61,40 +55,25 @@ actor {
     };
 
 
-    public query func manager_list(): async [ManagerInfo]{
+    // 查询业务管理服务列表，相当于业务服务类型
+    public query(msg) func manager_list(): async [ManagerInfo]{
         return Iter.toArray(manager_map.vals());
     };
 
-
-    // 用户查询业务列表，然后根据需要去连接对应的业务服务
-    public func sever_list(_principal: PrincipalText): async ?[ServerInfo]{
-        let mng_principal = Principal.fromText(_principal);
-        switch(manager_map.get(mng_principal)){
-            case null { null };
-            case (?m) { 
-                let manager : ManagerActor = actor(_principal);
-                return await manager.server_list();
-            };
-        };
-    };
-
-
-    // 用户相关接口
-
     // 用户注册
-    public shared(msg) func register(_name: Text): async Principal{
+    public shared(msg) func register(_info: UserInfo): async Principal{
         let principal = msg.caller;
-        user_map.put(principal, _name);
+        user_map.put(principal, _info);
         principal
     };
  
     // 用户登录
-    public shared(msg) func login(): async ?UserInfo{
+    public query(msg) func login(): async ?UserInfo{
         user_map.get(msg.caller)
     };
 
     // 查询用户信息
-    public shared(msg) func get_user(_user: Principal): async ?UserInfo{
+    public query(msg) func get_user(_user: Principal): async ?UserInfo{
         user_map.get(_user)
     };
 };

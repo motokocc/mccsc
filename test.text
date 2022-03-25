@@ -1,0 +1,17 @@
+ dfx canister call center register_manager '("ryjl3-tyaaa-aaaaa-aaaba-cai", "dice")'
+
+dfx canister call  center create_server '("r7inp-6aaaa-aaaaa-aaabq-cai", "ryjl3-tyaaa-aaaaa-aaaba-cai", "asdfs")'
+
+dfx canister call dice server_list
+
+dfx canister call rdmx6-jaaaa-aaaaa-aaadq-cai test
+
+ dfx canister call center register '("wode")'
+
+ dfx canister call score register 
+
+dfx canister call rdmx6-jaaaa-aaaaa-aaadq-cai test
+
+dfx canister call rdmx6-jaaaa-aaaaa-aaadq-cai match
+
+dfx canister call rdmx6-jaaaa-aaaaa-aaadq-cai ready
